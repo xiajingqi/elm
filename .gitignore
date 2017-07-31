@@ -1,0 +1,7 @@
+##ignore this file##
+/node_modules/
+.vscode
+/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
