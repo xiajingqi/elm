@@ -1,40 +1,47 @@
 <template>
   <div class="star" :class="starType">
-        <span v-for="(value,index) in itemClasses" :class="itemClass" :key="index"></span>
+        <span v-for="(item,index) in itemClasses" :class="item" :key="index" class="star-item"></span>
   </div>
 </template>
 <script>
-const length=5;
-const cls_on=on;
-const cls_half=half;
-const cls_off=off;
+let count=5;
+let on =on;
+let half=half;
+let off=off;
 export default {
     props:['size','score'],
-    computed:{
+    computed:{       
         starType(){
             return 'star-'+this.size;
         },
-        itemClass(){
+        itemClasses(){
             let result=[];
             let score = Math.floor(this.score*2)/2;
             let has =score %1!==0;
             let integer=Math.floor(score);
             for(let i=0;i<integer;i++){
-                result.push(cls_on)
+                result.push('on')
             }
             if(has){
-                result.push(cls_half)
+                result.push('half')
             }
-            while(result.length<length){
-                result.push(cls_off)
+            while(result.length<count){
+                result.push('off')
             }
+            return result;
         }
     }
 }
 </script>
-<style lang="stylus" scoped>
+<style lang="stylus">
     @import '../../common/stylus/mixin.styl'
     .star
+        // width 100%
+        // height 50px
+        // span
+        //     display inline-block
+        //     width 20px
+        //     height 20px
         .star-item
             display inline-block
             background-repeat no-repeat
