@@ -1,10 +1,22 @@
 body,html
     font-weight: 200
+// 实现0.5px border表框 
+// 1.设置元素相对定位 2.设置对应的伪元素绝对定位 3.通过媒体查询 等比缩放
 @media(-webkit-min-device-pixel-ratio:1.5),(min-device-pixel-ratio:1.5)
     .border-1px
         &::after
             -webkit-transform: scaleY(0.7)
             transform: scaleY(0.7)
+// border-1px($color)
+//     position: relative
+//     &:after
+//         display: block
+//         position: absolute
+//         left 0
+//         bottom 0
+//         width 100%
+//         border-top: 1px solid $color
+//         content ' '
 @media(-webkit-min-device-pixel-ratio:2),(min-device-pixel-ratio:2)
     .border-1px
         &::after

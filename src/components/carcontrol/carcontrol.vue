@@ -1,8 +1,12 @@
 <template>
   <div class="carcontrol">
-    <div class="decrease iconfont icon-remove_circle_outline" v-show="food.count>0"></div>
+    <transition name="move">
+        <div class="decrease" v-show="food.count>0" @click="decreaseCar">
+            <span class="inner iconfont icon-remove_circle_outline"></span>
+        </div>
+    </transition>  
     <div class="count" v-show="food.count>0">{{food.count}}</div>
-    <div class="add iconfont icon-add_circle" @click="addCar($event)"></div>
+    <div class="add iconfont icon-add_circle" @click="addCar($el,$event)"></div>
   </div>
 </template>
 
@@ -18,16 +22,25 @@ export default {
         // console.log(this.food)
     },
     methods:{
-        addCar(event){
+        addCar(el,event){
             if(!event._constructed){
                 return;
             }
-            console.log(111)
             if(!this.food.count){
-                this.food.count=1;
+                Vue.set(this.food,'count',1)
             }else{
                 this.food.count++;
             }
+            this.$emit('add',event.target);
+        },
+        decreaseCar(){
+            if(!event._constructed){
+                return;
+            }
+            if(this.food.count>0){
+                this.food.count--;
+            }
+
         }
     }
 }

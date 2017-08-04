@@ -30,7 +30,7 @@
                     <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="carcontrol-wrapper">
-                    <carcontrol :food="food"></carcontrol>
+                    <carcontrol :food="food" @add="addFood"></carcontrol>
                   </div>
                 </div>
               </li>
@@ -38,7 +38,7 @@
           </li>
         </ul>
       </div>
-      <car :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></car>
+      <car :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice" ref="car"></car>
   </div>
 </template>
 <script>
@@ -54,7 +54,7 @@ export default {
   },
   data(){
     return{
-      goods:'',
+      goods:[],
       classMap:['decrease','discount','special','invoice','guarantee'],
       listHeight:[],
       scrollY:0
@@ -70,6 +70,17 @@ export default {
         }
       }
       return 0;
+    },
+    selectFoods(){
+      let foods =[];
+      this.goods.forEach((good)=>{
+        good.foods.forEach((food)=>{
+          if(food.count){
+            foods.push(food)
+          }
+        })
+      })
+      return foods
     }
   },
   created(){
@@ -115,6 +126,14 @@ export default {
         height+=item.clientHeight;
         this.listHeight.push(height);
       }
+    },
+    addFood(target){
+      this._drop(target);
+    },
+    _drop(target){
+      this.$nextTick(()=>{
+        this.$refs.car.drop(target)
+      })
     }
   }
 }

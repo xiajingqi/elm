@@ -1,17 +1,45 @@
 @import '../../common/stylus/mixin.styl'
 .carcontrol{
-    .decrease,.add{
+    .decrease{
         display: inline-block
         padding: 6px
-        line-height 24px
-        font-size: 24px
+        opacity: 1
+        transition: all 0.4s linear
         color rgb(0,160,220)
+        .inner{
+            display: inline-block
+            opacity: 1
+            line-height 24px
+            font-size: 16px
+            transition: all 0.4s linear
+            transform: rotate(0)
+        }
+        &.move-enter-active,&.move-leave-active{
+            transition all 0.4s linear
+        }
+        &.move-enter,&.move-leave-active{
+            opacity: 0
+            transform: translate3d(24px,0,0)
+            .inner{
+                transform: rotate(180deg)
+            }
+        }
     }
     .count{
         display: inline-block
-        padding: 6px
+        vertical-align: top
+        width 12px  
+        line-height 24px
+        padding-top: 6px
+        text-align: center
+        font-size: 10px
+        color rgb(147,153,159)
     }
     .add{
-
+        display: inline-block
+        padding: 6px
+        line-height 24px
+        font-size: 16px
+        color rgb(0,160,220)
     }
 }

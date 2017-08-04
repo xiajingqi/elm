@@ -29,14 +29,20 @@
         <div class="background">
             <img :src="seller.avatar" alt="">
         </div>
+        <!--sticky footer 布局-->
         <transition name="fade">
+            <!--sticky footer 布局-->
+            <!--最外层盒子-->
             <div class="detail" v-show="detailShow">
+                <!--同级盒子-->
                 <div class="wrapper clearfix">
+                    <!--子盒子 设置padding-bottom-->
                     <div class="main">
                         <h1 class="name">{{seller.name}}</h1>
                         <div class="star-wrapper">
                             <star :size="48" :score="seller.score"></star>
                         </div>
+                        <!--display flex 实现标题效果-->
                         <div class="title">
                             <div class="line"></div>
                             <div class="text">优惠信息</div>
@@ -58,10 +64,12 @@
                         </div>
                     </div>
                 </div>
+                <!--同级盒子-->
                 <div class="close" @click="hideDetail">
                     <i class="iconfont icon-close"></i>
                 </div>
             </div>
+            <!--sticky footer 布局-->
         </transition>
     </div>
 </template>

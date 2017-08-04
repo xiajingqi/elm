@@ -1,6 +1,6 @@
 <template>
     <div class="car">
-        <div class="content">
+        <div class="content" @click="toggleList">
             <div class="cont-left">
                 <div class="logo-wrapper">
                     <div class="logo" :class="{'highlight':totalCount>0}">
@@ -16,11 +16,68 @@
                     {{payDesc}}
                 </div>
             </div>
+            <div class="ball-container">
+                <div v-for='(ball,index) in balls' :key="index">
+                    <transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
+                        <div class="ball" v-show="ball.show">
+                            <div class="inner"></div>
+                        </div>
+                    </transition>
+                </div>
+            </div>
+            <transition name="fold">
+                <div class="car-list" v-show="listShow">
+                    <div class="list-header">
+                        <div class="title">购物车</div>
+                        <div class="empty">清空</div>
+                    </div>
+                    <div class="list-content" ref="listContent">
+                        <ul>
+                            <li class="food border-1px" v-for="(food,index) in selectFoods" :key="index">
+                                <span class="name">{{food.name}}</span>
+                                <div class="price">
+                                    <span>￥{{food.price*food.count}}</span>
+                                </div>
+                                <div class="carcontrol-wrapper">
+                                    <carcontrol :food="food"></carcontrol>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
 <script>
+import BScroll from 'better-scroll';
+import carcontrol from '../carcontrol/carcontrol.vue'
 export default {
+    data(){
+        return{
+            balls:[
+                {
+                    show:false
+                },
+                // {
+                //     show:false
+                // },
+                // {
+                //     show:false
+                // },
+                // {
+                //     show:false
+                // },
+                // {
+                //     show:false
+                // }
+            ],
+            dropBalls:[],
+            fold:true
+        }
+    },
+    // 父传子的两种方式
+    // props:['seller'],
     props:{
             deliveryPrice:{
                 type:Number,
@@ -33,13 +90,16 @@ export default {
                 default(){
                     return[
                         {
-                            price:10,
-                            count:1
+                            // price:10,
+                            // count:1
                         }
                     ]
                 }
             }
-        },
+    },
+    components:{
+        carcontrol
+    },
     computed:{
         totalPrice(){
             let total=0;
@@ -70,6 +130,82 @@ export default {
                 return 'not-enough'
             }else{
                 return 'enough'
+            }
+        },
+        listShow(){
+            if(!this.totalCount){
+                this.fold=true;
+                return false;
+            }
+            let show =!this.fold;
+            if(show){
+                if(!this.scroll){
+                        this.$nextTick(()=>{
+                        this.scroll=new BScroll(this.$refs.listContent,{
+                            click:true
+                        })
+                    })
+                }else{
+                    this.scroll.refresh()
+                }
+            }
+            return show;
+        }
+    },
+    methods:{
+        toggleList(){
+            if(!this.totalCount){
+                return;
+            }
+            this.fold=!this.fold;
+        },
+        drop(el){
+            for(let i=0;i<this.balls.length;i++){
+                let ball =this.balls[i]
+                if(!ball.show){
+                    ball.show=true
+                    ball.el=el
+                    this.dropBalls.push(ball)
+                    return
+                }
+            }
+        },
+        beforeDrop(el){
+            let count =this.balls.length;
+            while(count--){
+                let ball =this.balls[count];
+                if(ball.show){
+                    // 内置API
+                    let rect =ball.el.getBoundingClientRect();
+                    let x=rect.left-32;
+                    let y=-(window.innerHeight-rect.top-22);
+                    el.style.display="";
+                    el.style.webkitTransform=`translate3d(0,${y}px,0)`;
+                    el.style.tansform=`translate3d(0,${y}px,0)`;
+                    let inner = el.getElementsByClassName('inner')[0];
+                    inner.style.webkitTransform=`translate3d(${x}px,0,0)`;
+                    inner.style.transform=`translate3d(${x}px,0,0)`;
+                }
+            }
+        },
+        dropping(el,done){          
+            /* eslint-disable no-unused-vars */  
+            let rf =el.offsetHeight;
+            this.$nextTick(()=>{
+                el.style.webkitTransform='translate3d(0,0,0)'
+                el.style.transform='translate3d(0,0,0)'
+                let inner =el.getElementsByClassName('inner')[0]
+                inner.style.webkitTransform='translate3d(0,0,0)'
+                inner.style.transform='translate3d(0,0,0)'
+                // 用js过度 el.addEventListener('transitionend',done) 是必须的
+                el.addEventListener('transitionend',done)
+            })
+        },
+        afterDrop(el){
+            let ball =this.dropBalls.shift();
+            if(ball){
+                ball.show=false;
+                el.style.display='none'
             }
         }
     }
