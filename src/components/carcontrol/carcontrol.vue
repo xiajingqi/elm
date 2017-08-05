@@ -6,7 +6,7 @@
         </div>
     </transition>  
     <div class="count" v-show="food.count>0">{{food.count}}</div>
-    <div class="add iconfont icon-add_circle" @click="addCar($el,$event)"></div>
+    <div class="add iconfont icon-add_circle" @click.stop="addCar($event)"></div>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ export default {
         // console.log(this.food)
     },
     methods:{
-        addCar(el,event){
+        addCar(event){
             if(!event._constructed){
                 return;
             }
@@ -31,9 +31,10 @@ export default {
             }else{
                 this.food.count++;
             }
+            // 传递给父组件
             this.$emit('add',event.target);
         },
-        decreaseCar(){
+        decreaseCar(event){
             if(!event._constructed){
                 return;
             }

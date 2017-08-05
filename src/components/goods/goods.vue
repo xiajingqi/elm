@@ -15,7 +15,7 @@
           <li v-for="(item,index) in goods" :key="index" class="food-list">
             <h1 class="title">{{item.name}}</h1>
             <ul>
-              <li v-for="(food,index) in item.foods" :key="index" class="food-item border-1px">
+              <li @click="selectedFood(food,$event)" v-for="(food,index) in item.foods" :key="index" class="food-item border-1px">
                 <div class="icon">
                   <img width="57" height="57" :src="food.icon" alt="">
                 </div>
@@ -30,6 +30,7 @@
                     <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="carcontrol-wrapper">
+                    <!--接受子组件传递过来的事件以及参数-->
                     <carcontrol :food="food" @add="addFood"></carcontrol>
                   </div>
                 </div>
@@ -38,26 +39,32 @@
           </li>
         </ul>
       </div>
-      <car :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice" ref="car"></car>
+      <car :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" 
+      :minPrice="seller.minPrice" ref="car"></car>
+      <!--父调用子组件方法 ref="food"  this.$refs.food.show()-->
+      <food :food="selectFood" ref="food" @add="addFood"></food>
   </div>
 </template>
 <script>
 import BScroll from 'better-scroll';
 import car from '../car/car.vue'
 import carcontrol from '../carcontrol/carcontrol.vue'
+import food from '../food/food.vue'
 const err_ok=0;
 export default {
   props:['seller'],
   components:{
     car,
-    carcontrol
+    carcontrol,
+    food
   },
   data(){
     return{
       goods:[],
       classMap:['decrease','discount','special','invoice','guarantee'],
       listHeight:[],
-      scrollY:0
+      scrollY:0,
+      selectFood:{}
     }
   },
   computed:{
@@ -132,8 +139,16 @@ export default {
     },
     _drop(target){
       this.$nextTick(()=>{
+        // 调用car子组件的方法
         this.$refs.car.drop(target)
       })
+    },
+    selectedFood(food,event){
+      if(!event._constructed){
+            return;
+        }
+      this.selectFood=food;
+      this.$refs.food.show()
     }
   }
 }

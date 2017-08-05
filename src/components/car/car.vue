@@ -11,7 +11,7 @@
                 <div class="price" :class="{'highlight':totalPrice>0}" v-show="totalCount>0">￥{{totalPrice}}元</div>
                 <div class="desc">另需配送费￥{{deliveryPrice}}</div>
             </div>
-            <div class="cont-right">
+            <div class="cont-right" @click.stop="pay">
                 <div class="pay" :class="payClass">
                     {{payDesc}}
                 </div>
@@ -29,7 +29,7 @@
                 <div class="car-list" v-show="listShow">
                     <div class="list-header">
                         <div class="title">购物车</div>
-                        <div class="empty">清空</div>
+                        <div class="empty" @click="empty">清空</div>
                     </div>
                     <div class="list-content" ref="listContent">
                         <ul>
@@ -39,7 +39,7 @@
                                     <span>￥{{food.price*food.count}}</span>
                                 </div>
                                 <div class="carcontrol-wrapper">
-                                    <carcontrol :food="food"></carcontrol>
+                                    <carcontrol :food="food" @add="addFood"></carcontrol>
                                 </div>
                             </li>
                         </ul>
@@ -47,6 +47,9 @@
                 </div>
             </transition>
         </div>
+        <transition name="fade">
+            <div class="list-mask" v-show="listShow" @click="hideList"></div>
+        </transition>
     </div>
 </template>
 <script>
@@ -59,18 +62,18 @@ export default {
                 {
                     show:false
                 },
-                // {
-                //     show:false
-                // },
-                // {
-                //     show:false
-                // },
-                // {
-                //     show:false
-                // },
-                // {
-                //     show:false
-                // }
+                {
+                    show:false
+                },
+                {
+                    show:false
+                },
+                {
+                    show:false
+                },
+                {
+                    show:false
+                }
             ],
             dropBalls:[],
             fold:true
@@ -160,6 +163,7 @@ export default {
             this.fold=!this.fold;
         },
         drop(el){
+            // el 与下面的 el不是同一个el
             for(let i=0;i<this.balls.length;i++){
                 let ball =this.balls[i]
                 if(!ball.show){
@@ -175,11 +179,12 @@ export default {
             while(count--){
                 let ball =this.balls[count];
                 if(ball.show){
-                    // 内置API
+                    // 内置API getBoundingClientRect()
                     let rect =ball.el.getBoundingClientRect();
                     let x=rect.left-32;
                     let y=-(window.innerHeight-rect.top-22);
                     el.style.display="";
+                    // 相对于原来初始位置的偏移量
                     el.style.webkitTransform=`translate3d(0,${y}px,0)`;
                     el.style.tansform=`translate3d(0,${y}px,0)`;
                     let inner = el.getElementsByClassName('inner')[0];
@@ -192,6 +197,7 @@ export default {
             /* eslint-disable no-unused-vars */  
             let rf =el.offsetHeight;
             this.$nextTick(()=>{
+                // 回到原来初始位置
                 el.style.webkitTransform='translate3d(0,0,0)'
                 el.style.transform='translate3d(0,0,0)'
                 let inner =el.getElementsByClassName('inner')[0]
@@ -207,7 +213,25 @@ export default {
                 ball.show=false;
                 el.style.display='none'
             }
-        }
+        },
+        empty(){
+            this.selectFoods.forEach((food)=>{
+                food.count=0;
+            })
+        },
+        hideList(){
+            this.fold=true;
+        },
+        pay(){
+            if(this.totalPrice<this.minPrice){
+                return
+            }
+            window.alert (`支付${this.totalPrice}元`)           
+        },
+        addFood(target) {
+            console.log(target)
+            this.drop(target);
+        },
     }
 }
 </script>
