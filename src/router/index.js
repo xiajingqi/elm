@@ -5,7 +5,7 @@ import goods from  '@/components/goods/goods'
 import seller from  '@/components/seller/seller'
 import rating from  '@/components/rating/rating'
 import '../common/stylus/index.styl'
-import '../common/fonts/iconfont.css'
+import '../common/fonts/style.css'
 
 
 Vue.use(Router)
