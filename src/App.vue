@@ -6,25 +6,35 @@
         <router-link to="/rating"  class="tab-item">评价</router-link>
         <router-link to="/seller" class="tab-item">商家</router-link>
       </div>
-      <router-view :seller="seller"></router-view>
+      <!--切换路由保存原有状态不销毁-->
+      <keep-alive>
+        <router-view :seller="seller"></router-view>
+      </keep-alive>
       <div class="content">
       </div>
   </div>
 </template>
 
 <script>
+import {urlParse} from "./common/js/date.js"
 import header from './components/header/header.vue'
 const err_ok=0;
 export default {
    data(){
       return{
-          seller:{}
+          seller:{
+            id:(()=>{
+              let queryParam =urlParse();
+              return queryParam.id;
+            })()
+          }
       }
   },
   created(){
-      this.$http.get('/api/seller').then((res)=>{
+      this.$http.get('/api/seller?id='+this.seller.id).then((res)=>{
             if(res.body.errno===err_ok){
-                this.seller=res.body.data;
+                this.seller=Object.assign({},this.seller,res.body.data)
+                console.log(this.seller)
             }
       },(res)=>{
 
